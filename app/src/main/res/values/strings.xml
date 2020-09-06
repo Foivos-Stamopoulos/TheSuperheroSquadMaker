@@ -1,0 +1,16 @@
+<resources>
+
+    <string name="app_name" translatable="false">Marvel</string>
+
+    <string name="button_recruit">Recruit to Squad</string>
+    <string name="button_fire">Fire from Squad</string>
+    <string name="label_last_appeared">Last appeared in</string>
+    <string name="my_squad">My Squad</string>
+    <!--<string name="label_other_comic_books_appeared">and other comic</string>-->
+
+    <plurals name="numberOfComicsAppeared">
+        <item quantity="one">and %d other comic</item>
+        <item quantity="other">and %d other comics</item>
+    </plurals>
+
+</resources>
