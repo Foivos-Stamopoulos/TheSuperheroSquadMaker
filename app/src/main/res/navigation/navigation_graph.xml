@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/superHeroesFragment">
+
+    <fragment
+        android:id="@+id/superHeroesFragment"
+        android:name="com.fivos.thesuperherosquadmaker.ui.superHeroes.SuperHeroesFragment"
+        android:label="super_heroes_fragment"
+        tools:layout="@layout/super_heroes_fragment" >
+        <action
+            android:id="@+id/action_superHeroesFragment_to_superHeroDetailsFragment"
+            app:destination="@id/superHeroDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/superHeroDetailsFragment"
+        android:name="com.fivos.thesuperherosquadmaker.ui.superHeroDetails.SuperHeroDetailsFragment"
+        android:label="super_hero_details_fragment"
+        tools:layout="@layout/super_hero_details_fragment" >
+        <argument
+            android:name="hero_id"
+            app:argType="string"
+            android:defaultValue=" " />
+    </fragment>
+</navigation>
