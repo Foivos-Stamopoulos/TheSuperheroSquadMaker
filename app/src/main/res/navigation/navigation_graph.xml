@@ -21,7 +21,7 @@
         tools:layout="@layout/super_hero_details_fragment" >
         <argument
             android:name="hero_id"
-            app:argType="string"
-            android:defaultValue=" " />
+            app:argType="integer"
+            android:defaultValue="-1" />
     </fragment>
 </navigation>

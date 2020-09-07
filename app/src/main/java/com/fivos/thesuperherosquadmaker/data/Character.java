@@ -1,29 +1,46 @@
 package com.fivos.thesuperherosquadmaker.data;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.util.List;
 
+@Entity
 public class Character {
 
-    private String id;
+    @PrimaryKey
+    private int id;
+
+    @ColumnInfo(name = "name")
     private String name;
+
+    @ColumnInfo(name = "description")
     private String description;
+
+    @ColumnInfo(name = "modified")
     private String modified;
+
+    //@ColumnInfo(name = "thumbnail")
     private Thumbnail thumbnail;
+
+    @ColumnInfo(name = "resourceURI")
     private String resourceURI;
+
     private Comics comics;
 
-    public Character(String id, String name, String description, String modified,
+    public Character(int id, String name, String description, String modified,
                      Thumbnail thumbnail, String resourceURI, Comics comics) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.modified = modified;
-        this.thumbnail = thumbnail;
+        //this.thumbnail = thumbnail;
         this.resourceURI = resourceURI;
         this.comics = comics;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
@@ -42,6 +59,12 @@ public class Character {
     public Thumbnail getThumbnail() {
         return thumbnail;
     }
+
+    /*
+
+    public void setThumbnail(Thumbnail thumbnail) {
+        this.thumbnail = new Gson().toJson(thumbnail);
+    }*/
 
     public String getResourceURI() {
         return resourceURI;
@@ -110,6 +133,6 @@ public class Character {
                 this.name = name;
             }
         }
-    }
 
+    }
 }

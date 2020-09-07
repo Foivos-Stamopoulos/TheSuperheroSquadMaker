@@ -1,4 +1,4 @@
-package com.fivos.thesuperherosquadmaker.ui.superHeroDetails;
+package com.fivos.thesuperherosquadmaker;
 
 import android.util.Log;
 
@@ -20,34 +20,30 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
-public class SuperHeroDetailsViewModel extends ViewModel {
+public class MainActivityViewModel extends ViewModel {
 
-    private static final String TAG = SuperHeroDetailsViewModel.class.getSimpleName();
+    private static final String TAG = MainActivityViewModel.class.getSimpleName();
     private CompositeDisposable mDisposable;
-    private int mId;
-    private MutableLiveData<Character> superHero = new MutableLiveData<>();
+    private MutableLiveData<List<Character>> superHeroes = new MutableLiveData<>();
 
-    public SuperHeroDetailsViewModel(int id) {
-        mId = id;
+    public MainActivityViewModel() {
         mDisposable = new CompositeDisposable();
+        fetchSuperHeroes();
     }
 
-    void fetchSuperHero() {
+    void fetchSuperHeroes() {
         String timestamp = ApiHelper.getTimeStamp();
         String hash = ApiHelper.getHash(timestamp);
         if (hash != null) {
             mDisposable.add(NetworkClient.getRetrofit().create(SuperHeroesAPI.class)
-                    .getCharacter(mId, timestamp, Config.API_PUBLIC_KEY, hash)
+                    .getCharacters(timestamp, Config.API_PUBLIC_KEY, hash)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(new DisposableSingleObserver<CharacterResponse>() {
                         @Override
                         public void onSuccess(CharacterResponse characterResponse) {
                             if (characterResponse != null && characterResponse.getData() != null) {
-                                List<Character> list = characterResponse.getData().getResults();
-                                if (list != null && list.size() > 0) {
-                                    superHero.setValue(list.get(0));
-                                }
+                                superHeroes.setValue(characterResponse.getData().getResults());
                             }
                         }
 
@@ -59,8 +55,8 @@ public class SuperHeroDetailsViewModel extends ViewModel {
         }
     }
 
-    public LiveData<Character> getSuperHero() {
-        return superHero;
+    public LiveData<List<Character>> getSuperHeroes() {
+        return superHeroes;
     }
 
     @Override
@@ -68,5 +64,4 @@ public class SuperHeroDetailsViewModel extends ViewModel {
         super.onCleared();
         mDisposable.dispose();
     }
-
 }

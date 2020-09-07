@@ -101,11 +101,11 @@ public class SuperHeroAdapter extends RecyclerView.Adapter<SuperHeroAdapter.View
         }
     }
 
-    String getCharacterId(int position) {
+    int getCharacterId(int position) {
         if (mCharacters != null) {
             return mCharacters.get(position).getId();
         }
-        return null;
+        return -1;
     }
 
 }
