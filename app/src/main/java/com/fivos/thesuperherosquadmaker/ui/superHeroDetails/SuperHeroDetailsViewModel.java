@@ -11,6 +11,7 @@ import com.fivos.thesuperherosquadmaker.api.NetworkClient;
 import com.fivos.thesuperherosquadmaker.api.SuperHeroesAPI;
 import com.fivos.thesuperherosquadmaker.data.Character;
 import com.fivos.thesuperherosquadmaker.data.CharacterResponse;
+import com.fivos.thesuperherosquadmaker.data.ComicsResponse;
 import com.fivos.thesuperherosquadmaker.util.Config;
 
 import java.util.List;
@@ -26,10 +27,19 @@ public class SuperHeroDetailsViewModel extends ViewModel {
     private CompositeDisposable mDisposable;
     private int mId;
     private MutableLiveData<Character> superHero = new MutableLiveData<>();
+    private MutableLiveData<List<ComicsResponse.Data.Comics>> comics = new MutableLiveData<>();
+    private MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
 
     public SuperHeroDetailsViewModel(int id) {
         mId = id;
         mDisposable = new CompositeDisposable();
+    }
+
+    void start() {
+        isLoading.setValue(true);
+        // TODO: 8/9/2020 check first if hero exists in DB else make request !!
+        fetchSuperHero();
+        fetchComics();
     }
 
     void fetchSuperHero() {
@@ -47,6 +57,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
                                 List<Character> list = characterResponse.getData().getResults();
                                 if (list != null && list.size() > 0) {
                                     superHero.setValue(list.get(0));
+                                    isLoading.setValue(false);
                                 }
                             }
                         }
@@ -54,6 +65,34 @@ public class SuperHeroDetailsViewModel extends ViewModel {
                         @Override
                         public void onError(Throwable e) {
                             Log.d(TAG, "error: " + e.getMessage());
+                            isLoading.setValue(false);
+                        }
+                    }));
+        }
+    }
+
+    void fetchComics() {
+        String timestamp = ApiHelper.getTimeStamp();
+        String hash = ApiHelper.getHash(timestamp);
+        if (hash != null) {
+            mDisposable.add(NetworkClient.getRetrofit().create(SuperHeroesAPI.class)
+                    .getComics(mId, timestamp, Config.API_PUBLIC_KEY, hash)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new DisposableSingleObserver<ComicsResponse>() {
+                        @Override
+                        public void onSuccess(ComicsResponse characterResponse) {
+                            if (characterResponse != null && characterResponse.getData() != null) {
+                                List<ComicsResponse.Data.Comics> list = characterResponse.getData().getResults();
+                                comics.setValue(list);
+                                //isLoading.setValue(false);
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.d(TAG, "error: " + e.getMessage());
+                            //isLoading.setValue(false);
                         }
                     }));
         }
@@ -61,6 +100,14 @@ public class SuperHeroDetailsViewModel extends ViewModel {
 
     public LiveData<Character> getSuperHero() {
         return superHero;
+    }
+
+    public MutableLiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
+
+    public MutableLiveData<List<ComicsResponse.Data.Comics>> getComics() {
+        return comics;
     }
 
     @Override

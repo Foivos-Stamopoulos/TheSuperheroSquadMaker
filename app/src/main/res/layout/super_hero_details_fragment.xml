@@ -1,55 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/colorPrimary"
-    tools:context=".ui.superHeroDetails.SuperHeroDetailsFragment">
+    android:fillViewport="true">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <ImageView
-        android:id="@+id/avatar_IV"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <TextView
-        android:id="@+id/name_TV"
-        style="@style/XLargeFont.White"
-        tools:text="A-Bomb (HAS)"
-        android:layout_marginTop="24dp"
-        android:layout_marginStart="@dimen/activity_padding"
-        android:layout_marginEnd="@dimen/activity_padding"/>
-
-    <Button
-        android:id="@+id/button"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_padding"
-        android:layout_marginEnd="@dimen/activity_padding"
-        android:layout_marginTop="@dimen/activity_padding"
-        tools:text="@string/button_recruit"
-        android:textAllCaps="false"/>
+        android:background="@color/colorPrimary"
+        android:orientation="vertical"
+        tools:context=".ui.superHeroDetails.SuperHeroDetailsFragment">
 
-    <TextView
-        android:id="@+id/biography_TV"
-        style="@style/MediumFont.White"
-        android:layout_marginStart="@dimen/activity_padding"
-        android:layout_marginEnd="@dimen/activity_padding"
-        android:layout_marginTop="@dimen/activity_padding"
-        tools:text="Rick Jones has been Hulk's best bud since day one, but now he's more than a friend...he's a teammate! Transformed by a Gamma energy explosion, A-Bomb's thick, armored skin is just as strong and powerful as it is blue. And when he curls into action, he uses it like a giant bowling ball of destruction!"/>
+        <ImageView
+            android:id="@+id/avatar_IV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
+            tools:srcCompat="@tools:sample/avatars" />
 
-    <TextView
-        android:id="@+id/last_appeared_TV"
-        style="@style/XLargeFont.White"
-        android:text="@string/label_last_appeared"
-        android:layout_marginStart="@dimen/activity_padding"
-        android:layout_marginEnd="@dimen/activity_padding"
-        android:layout_marginTop="@dimen/activity_padding"/>
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/name_TV"
+            style="@style/XLargeFont.White"
+            android:layout_below="@id/avatar_IV"
+            android:layout_marginStart="@dimen/activity_padding"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="@dimen/activity_padding"
+            tools:text="A-Bomb (HAS)" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/name_TV"
+            android:layout_marginStart="@dimen/activity_padding"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="@dimen/activity_padding"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            tools:text="@string/button_recruit" />
+
+        <TextView
+            android:id="@+id/biography_TV"
+            style="@style/MediumFont.White"
+            android:layout_below="@id/button"
+            android:layout_marginStart="@dimen/activity_padding"
+            android:layout_marginTop="@dimen/activity_padding"
+            android:layout_marginEnd="@dimen/activity_padding"
+            tools:text="Rick Jones has been Hulk's best bud since day one, but now he's more than a friend...he's a teammate! Transformed by a Gamma energy explosion, A-Bomb's thick, armored skin is just as strong and powerful as it is blue. And when he curls into action, he uses it like a giant bowling ball of destruction!" />
+
+        <TextView
+            android:id="@+id/last_appeared_TV"
+            style="@style/XLargeFont.White"
+            android:layout_below="@id/biography_TV"
+            android:layout_marginStart="@dimen/activity_padding"
+            android:layout_marginTop="@dimen/activity_padding"
+            android:layout_marginEnd="@dimen/activity_padding"
+            android:text="@string/label_last_appeared" />
+
+        <LinearLayout
+            android:id="@+id/comics_LL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/last_appeared_TV"
+            android:layout_marginStart="@dimen/activity_padding"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="@dimen/activity_padding"
+            android:weightSum="2"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/comic_1_IV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                tools:srcCompat="@tools:sample/avatars" />
+
+            <ImageView
+                android:id="@+id/comic_2_IV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                tools:srcCompat="@tools:sample/avatars" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/other_comics_TV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/comics_LL"
+            tools:text="and 1 other comic" />
+
+    </RelativeLayout>
+
+</ScrollView>

@@ -93,7 +93,7 @@ public class Character {
         }
     }
 
-    class Comics {
+    public class Comics {
 
         private int available;
         private String collectionURI;
@@ -123,7 +123,7 @@ public class Character {
             return returned;
         }
 
-        class Item {
+        public class Item {
 
             private String resourceURI;
             private String name;
@@ -131,6 +131,14 @@ public class Character {
             public Item(String resourceURI, String name) {
                 this.resourceURI = resourceURI;
                 this.name = name;
+            }
+
+            public String getResourceURI() {
+                return resourceURI;
+            }
+
+            public String getName() {
+                return name;
             }
         }
 

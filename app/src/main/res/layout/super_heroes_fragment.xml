@@ -18,9 +18,10 @@
         android:theme="?attr/actionBarTheme" >
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+            android:layout_width="93dp"
+            android:layout_height="36dp"
+            android:src="@drawable/marvel_logo"
+            android:layout_gravity="center" />
 
     </androidx.appcompat.widget.Toolbar>
 
