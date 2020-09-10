@@ -12,7 +12,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -21,8 +20,6 @@ import com.fivos.thesuperherosquadmaker.data.Character;
 import com.fivos.thesuperherosquadmaker.data.ComicsResponse;
 import com.fivos.thesuperherosquadmaker.databinding.SuperHeroDetailsFragmentBinding;
 import com.fivos.thesuperherosquadmaker.util.UnitConverter;
-
-import java.util.List;
 
 public class SuperHeroDetailsFragment extends Fragment {
 
@@ -33,10 +30,6 @@ public class SuperHeroDetailsFragment extends Fragment {
 
     public SuperHeroDetailsFragment() {
         // Empty Constructor
-    }
-
-    public static SuperHeroDetailsFragment newInstance() {
-        return new SuperHeroDetailsFragment();
     }
 
     @Override
@@ -67,7 +60,7 @@ public class SuperHeroDetailsFragment extends Fragment {
     }
 
     private void subscribeToViewModel() {
-        mViewModel.getSuperHero().observe(getViewLifecycleOwner(), superHero -> setupSuperHeroDetails(superHero));
+        mViewModel.getSuperHero().observe(getViewLifecycleOwner(), this::setupSuperHeroDetails);
 
         mViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
             if (isLoading != null) {
@@ -79,22 +72,33 @@ public class SuperHeroDetailsFragment extends Fragment {
             }
         });
 
-        mViewModel.getComics().observe(getViewLifecycleOwner(), new Observer<List<ComicsResponse.Data.Comics>>() {
-            @Override
-            public void onChanged(List<ComicsResponse.Data.Comics> comicsList) {
-                if (comicsList != null) {
-                    if (comicsList.size() > 0) {
-                        ComicsResponse.Data.Comics comic1 = comicsList.get(0);
-                        Glide.with(getActivity()).load(comic1.getThumbnail().getUrl()).into(mBinding.comic1IV);
-                    }
-                    if (comicsList.size() >= 1) {
-                        ComicsResponse.Data.Comics comic2 = comicsList.get(1);
-                        Glide.with(getActivity()).load(comic2.getThumbnail().getUrl()).into(mBinding.comic2IV);
-                    }
+        mViewModel.getComics().observe(getViewLifecycleOwner(), comicsList -> {
+            if (comicsList != null) {
+                if (comicsList.size() > 0) {
+                    ComicsResponse.Data.Comics comic1 = comicsList.get(0);
+                    Glide.with(getActivity()).load(comic1.getThumbnail().getUrl()).into(mBinding.comic1IV);
+                    mBinding.comic1TV.setText(comic1.getTitle());
                 }
+                if (comicsList.size() >= 1) {
+                    ComicsResponse.Data.Comics comic2 = comicsList.get(1);
+                    Glide.with(getActivity()).load(comic2.getThumbnail().getUrl()).into(mBinding.comic2IV);
+                    mBinding.comic2TV.setText(comic2.getTitle());
+                }
+            }
 
+        });
+
+        mViewModel.getTotalComicsAppeared().observe(getViewLifecycleOwner(), totalComicsAppeared -> {
+            if (totalComicsAppeared != null && totalComicsAppeared > 2) {
+                mBinding.otherComicsTV.setVisibility(View.VISIBLE);
+                String text = getResources().getQuantityString(R.plurals.numberOfComicsAppeared,
+                        totalComicsAppeared - 2, totalComicsAppeared - 2);
+                mBinding.otherComicsTV.setText(text);
+            } else {
+                mBinding.otherComicsTV.setVisibility(View.INVISIBLE);
             }
         });
+
     }
 
     private void setupSuperHeroDetails(Character superHero) {
@@ -103,10 +107,6 @@ public class SuperHeroDetailsFragment extends Fragment {
             Glide.with(getActivity()).load(url).into(mBinding.avatarIV);
             mBinding.nameTV.setText(superHero.getName());
             mBinding.biographyTV.setText(superHero.getDescription());
-
-            /*Character.Comics comics = superHero.getComics();
-            List<Character.Comics.Item> comicsList = comics.getItems();*/
-
             styleButton(false);
         }
     }
@@ -136,7 +136,9 @@ public class SuperHeroDetailsFragment extends Fragment {
 
     private void hideProgressDialog() {
         DialogFragment dialog = (DialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag("progress_dialog");
-        dialog.dismiss();
+        if (dialog != null) {
+            dialog.dismiss();
+        }
     }
 
     @Override

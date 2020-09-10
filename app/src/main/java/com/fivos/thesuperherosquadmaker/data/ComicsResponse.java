@@ -22,6 +22,7 @@ public class ComicsResponse {
 
     public class Data {
 
+        private int total;
         private int count;
         private List<Comics> results;
 
@@ -36,6 +37,10 @@ public class ComicsResponse {
 
         public List<Comics> getResults() {
             return results;
+        }
+
+        public int getTotal() {
+            return total;
         }
 
         public class Comics {

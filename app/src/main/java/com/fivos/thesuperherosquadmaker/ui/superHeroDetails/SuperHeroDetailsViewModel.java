@@ -29,6 +29,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
     private MutableLiveData<Character> superHero = new MutableLiveData<>();
     private MutableLiveData<List<ComicsResponse.Data.Comics>> comics = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
+    private MutableLiveData<Integer> totalComicsAppeared = new MutableLiveData<>();
 
     public SuperHeroDetailsViewModel(int id) {
         mId = id;
@@ -39,7 +40,6 @@ public class SuperHeroDetailsViewModel extends ViewModel {
         isLoading.setValue(true);
         // TODO: 8/9/2020 check first if hero exists in DB else make request !!
         fetchSuperHero();
-        fetchComics();
     }
 
     void fetchSuperHero() {
@@ -57,7 +57,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
                                 List<Character> list = characterResponse.getData().getResults();
                                 if (list != null && list.size() > 0) {
                                     superHero.setValue(list.get(0));
-                                    isLoading.setValue(false);
+                                    fetchComics();
                                 }
                             }
                         }
@@ -85,14 +85,15 @@ public class SuperHeroDetailsViewModel extends ViewModel {
                             if (characterResponse != null && characterResponse.getData() != null) {
                                 List<ComicsResponse.Data.Comics> list = characterResponse.getData().getResults();
                                 comics.setValue(list);
-                                //isLoading.setValue(false);
+                                totalComicsAppeared.setValue(characterResponse.getData().getTotal());
                             }
+                            isLoading.setValue(false);
                         }
 
                         @Override
                         public void onError(Throwable e) {
                             Log.d(TAG, "error: " + e.getMessage());
-                            //isLoading.setValue(false);
+                            isLoading.setValue(false);
                         }
                     }));
         }
@@ -108,6 +109,10 @@ public class SuperHeroDetailsViewModel extends ViewModel {
 
     public MutableLiveData<List<ComicsResponse.Data.Comics>> getComics() {
         return comics;
+    }
+
+    public MutableLiveData<Integer> getTotalComicsAppeared() {
+        return totalComicsAppeared;
     }
 
     @Override
