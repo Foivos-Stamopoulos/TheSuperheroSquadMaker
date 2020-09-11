@@ -6,19 +6,19 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity
-public class Character {
+public class Comic {
 
     @PrimaryKey
     private int id;
 
-    @ColumnInfo(name = "name")
-    private String name;
-
-    @ColumnInfo(name = "description")
-    private String description;
+    @ColumnInfo(name = "title")
+    private String title;
 
     @ColumnInfo(name = "thumbnailUrl")
     private String thumbnailUrl;
+
+    @ColumnInfo(name = "superheroId")
+    private String superheroId;
 
     @Ignore
     private Thumbnail thumbnail;
@@ -27,36 +27,36 @@ public class Character {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getThumbnailUrl() {
-        return thumbnailUrl;
+    public String getTitle() {
+        return title;
     }
 
     public Thumbnail getThumbnail() {
         return thumbnail;
     }
 
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public String getSuperheroId() {
+        return superheroId;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public void setThumbnailUrl(String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public void setSuperheroId(String superheroId) {
+        this.superheroId = superheroId;
     }
 
     public void setThumbnail(Thumbnail thumbnail) {

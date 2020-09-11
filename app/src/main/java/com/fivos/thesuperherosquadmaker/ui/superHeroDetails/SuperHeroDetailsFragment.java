@@ -15,9 +15,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.fivos.thesuperherosquadmaker.Injection;
 import com.fivos.thesuperherosquadmaker.R;
 import com.fivos.thesuperherosquadmaker.data.Character;
-import com.fivos.thesuperherosquadmaker.data.ComicsResponse;
+import com.fivos.thesuperherosquadmaker.data.Comic;
 import com.fivos.thesuperherosquadmaker.databinding.SuperHeroDetailsFragmentBinding;
 import com.fivos.thesuperherosquadmaker.util.UnitConverter;
 
@@ -51,9 +52,11 @@ public class SuperHeroDetailsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this, new SuperHeroDetailsViewModelFactory(mId))
+        mViewModel = new ViewModelProvider(this,
+                new SuperHeroDetailsViewModelFactory(Injection.provideDataSource(getActivity()), mId))
                 .get(SuperHeroDetailsViewModel.class);
         mRedColor = ContextCompat.getColor(getActivity(), R.color.colorAccent);
+        mBinding.button.setOnClickListener(v -> mViewModel.onButtonPressed());
         setupToolbar();
         subscribeToViewModel();
         mViewModel.start();
@@ -75,12 +78,12 @@ public class SuperHeroDetailsFragment extends Fragment {
         mViewModel.getComics().observe(getViewLifecycleOwner(), comicsList -> {
             if (comicsList != null) {
                 if (comicsList.size() > 0) {
-                    ComicsResponse.Data.Comics comic1 = comicsList.get(0);
+                    Comic comic1 = comicsList.get(0);
                     Glide.with(getActivity()).load(comic1.getThumbnail().getUrl()).into(mBinding.comic1IV);
                     mBinding.comic1TV.setText(comic1.getTitle());
                 }
                 if (comicsList.size() >= 1) {
-                    ComicsResponse.Data.Comics comic2 = comicsList.get(1);
+                    Comic comic2 = comicsList.get(1);
                     Glide.with(getActivity()).load(comic2.getThumbnail().getUrl()).into(mBinding.comic2IV);
                     mBinding.comic2TV.setText(comic2.getTitle());
                 }
