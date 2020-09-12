@@ -1,10 +1,16 @@
 package com.fivos.thesuperherosquadmaker;
 
+import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
+
 import com.fivos.thesuperherosquadmaker.data.Character;
 import com.fivos.thesuperherosquadmaker.data.Comic;
 
+import java.util.List;
+
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 
 /**
  * Access point for managing user data.
@@ -16,14 +22,14 @@ public interface DataSource {
      *
      * @return the superheroes from the data source.
      */
-    Flowable<Character> getSuperheroes();
+    Flowable<List<Character>> getAllSuperheroes();
 
     /**
      * Gets the superhero from the data source.
      *
      * @return the superhero from the data source.
      */
-    Flowable<Character> getSuperhero(long heroId);
+    Maybe<Character> getSuperhero(long heroId);
 
 
     /**
@@ -36,7 +42,7 @@ public interface DataSource {
     /**
      * Deletes superhero from the data source.
      */
-    void deleteSuperhero(long heroId);
+    Completable deleteSuperhero(long heroId);
 
 
     /**
@@ -44,18 +50,19 @@ public interface DataSource {
      *
      * @return the comic from the data source.
      */
-    Flowable<Comic> getComicsByHeroId(long heroId);
+    Maybe<List<Comic>> getComicsByHeroId(long heroId);
 
     /**
      * Inserts the comic into the data source
      *
-     * @param comic the comic to be inserted
+     * @param comics the comic to be inserted
      */
-    void insertComic(Comic comic);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    Completable insertComics(List<Comic> comics);
 
     /**
      * Deletes comic/s from the data source.
      */
-    void deleteComicsByHeroId(long heroId);
+    Completable deleteComicsByHeroId(long heroId);
 
 }

@@ -6,7 +6,8 @@ import androidx.room.Query;
 
 import java.util.List;
 
-import io.reactivex.Flowable;
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
 
 @Dao
 public interface ComicDao {
@@ -15,12 +16,12 @@ public interface ComicDao {
     List<Comic> getAll();
 
     @Query("SELECT * FROM comic WHERE superheroId = :heroId")
-    Flowable<Comic> getComicsByHeroId(long heroId);
+    Maybe<List<Comic>> getComicsByHeroId(long heroId);
 
     @Insert
-    void insert(Comic comic);
+    Completable insert(List<Comic> comics);
 
     @Query("DELETE FROM comic WHERE superheroId = :heroId")
-    void deleteByHeroId(long heroId);
+    Completable deleteComicsByHeroId(long heroId);
 
 }

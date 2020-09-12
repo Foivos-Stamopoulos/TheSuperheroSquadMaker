@@ -79,12 +79,14 @@ public class SuperHeroDetailsFragment extends Fragment {
             if (comicsList != null) {
                 if (comicsList.size() > 0) {
                     Comic comic1 = comicsList.get(0);
-                    Glide.with(getActivity()).load(comic1.getThumbnail().getUrl()).into(mBinding.comic1IV);
+                    String url = comic1.getThumbnail() != null ? comic1.getThumbnail().getUrl() : comic1.getThumbnailUrl();
+                    Glide.with(getActivity()).load(url).into(mBinding.comic1IV);
                     mBinding.comic1TV.setText(comic1.getTitle());
                 }
                 if (comicsList.size() >= 1) {
                     Comic comic2 = comicsList.get(1);
-                    Glide.with(getActivity()).load(comic2.getThumbnail().getUrl()).into(mBinding.comic2IV);
+                    String url = comic2.getThumbnail() != null ? comic2.getThumbnail().getUrl() : comic2.getThumbnailUrl();
+                    Glide.with(getActivity()).load(url).into(mBinding.comic2IV);
                     mBinding.comic2TV.setText(comic2.getTitle());
                 }
             }
@@ -102,26 +104,33 @@ public class SuperHeroDetailsFragment extends Fragment {
             }
         });
 
+        mViewModel.getShouldRecruit().observe(getViewLifecycleOwner(), shouldRecruit -> {
+            if (shouldRecruit != null) {
+                styleButton(shouldRecruit);
+            }
+        });
+
     }
 
     private void setupSuperHeroDetails(Character superHero) {
         if (superHero != null) {
-            String url = superHero.getThumbnail().getPath() + "." + superHero.getThumbnail().getExtension();
+            String url = superHero.getThumbnail() != null ? superHero.getThumbnail().getUrl() : superHero.getThumbnailUrl();
             Glide.with(getActivity()).load(url).into(mBinding.avatarIV);
             mBinding.nameTV.setText(superHero.getName());
             mBinding.biographyTV.setText(superHero.getDescription());
-            styleButton(false);
         }
     }
 
-    private void styleButton(boolean heroBelongsToSquad) {
-        if (heroBelongsToSquad) {
+    private void styleButton(boolean shouldRecruit) {
+        if (shouldRecruit) {
+            mBinding.button.setBackgroundTintList(ColorStateList.valueOf(mRedColor));
+            mBinding.button.setText(R.string.button_recruit);
+            mBinding.button.invalidate();
+        } else {
             mBinding.button.setStrokeWidth((int) UnitConverter.convertDpToPixel(1, getActivity()));
             mBinding.button.setStrokeColor(ColorStateList.valueOf(mRedColor));
             mBinding.button.setText(R.string.button_fire);
-        } else {
-            mBinding.button.setBackgroundTintList(ColorStateList.valueOf(mRedColor));
-            mBinding.button.setText(R.string.button_recruit);
+            mBinding.button.invalidate();
         }
     }
 

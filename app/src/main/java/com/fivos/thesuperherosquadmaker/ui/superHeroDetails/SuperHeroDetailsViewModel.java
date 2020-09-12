@@ -33,6 +33,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
     private MutableLiveData<List<Comic>> comics = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     private MutableLiveData<Integer> totalComicsAppeared = new MutableLiveData<>();
+    private MutableLiveData<Boolean> shouldRecruit = new MutableLiveData<>();
     private final DataSource mDataSource;
 
     public SuperHeroDetailsViewModel(DataSource dataSource, int heroId) {
@@ -43,30 +44,64 @@ public class SuperHeroDetailsViewModel extends ViewModel {
 
     void start() {
         isLoading.setValue(true);
-        // TODO: 8/9/2020 check first if hero exists in DB else make request !!
         fetchSuperHeroFromDB(mId);
-        //fetchSuperHero();
     }
 
-    void fetchSuperHeroFromDB(long heroId) {
+    private void fetchSuperHeroFromDB(long heroId) {
         mDisposable.add(mDataSource.getSuperhero(heroId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(character -> {
-                            if (character == null) {
-                                Log.d(TAG, "hero is null");
-                            } else {
-                                Log.d(TAG, "hero name is: " + character.getName());
-                            }
-                        }
-                ));
+                            superHero.setValue(character);
+                            shouldRecruit.setValue(false);
+                            fetchComicsFromDB(character.getId());
+                        },
+                        ex -> {
+                            Log.d(TAG, "Error: " + ex.getMessage());
+                            isLoading.setValue(false);
+                        },
+                        () -> {
+                            Log.d(TAG, "Completed. Superhero not found in DB.");
+                            shouldRecruit.setValue(true);
+                            requestSuperHero();
+                        })
+        );
     }
 
-    public void onButtonPressed() {
-        insertSuperHeroInDB(superHero.getValue());
+    private void fetchComicsFromDB(long heroId) {
+        mDisposable.add(mDataSource.getComicsByHeroId(heroId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(comicsList -> {
+                            comics.setValue(comicsList);
+                            totalComicsAppeared.setValue(comicsList.size());
+                            isLoading.setValue(false);
+                        },
+                        ex -> {
+                            Log.d(TAG, "Error: " + ex.getMessage());
+                            isLoading.setValue(false);
+                        },
+                        () -> {
+                            Log.d(TAG, "Completed. No comics for this Superhero in DB.");
+                            isLoading.setValue(false);
+                        })
+        );
     }
 
-    void insertSuperHeroInDB(Character superhero) {
+    void onButtonPressed() {
+        Boolean shouldRecruitHero = shouldRecruit.getValue();
+        if (shouldRecruitHero != null) {
+            if (shouldRecruitHero) {
+                insertSuperHeroInDB(superHero.getValue());
+                insertComicsInDB(comics.getValue());
+            } else {
+                deleteSuperHeroById(mId);
+                deleteComicsByHeroId(mId);
+            }
+        }
+    }
+
+    private void insertSuperHeroInDB(Character superhero) {
         mDisposable.add(mDataSource.insertSuperhero(superhero)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -74,6 +109,11 @@ public class SuperHeroDetailsViewModel extends ViewModel {
                     @Override
                     public void onComplete() {
                         Log.d(TAG, "hero inserted in DB");
+                        List<Comic> comicsList = getSuperheroComics();
+                        if (comicsList != null && comicsList.size() > 0) {
+                            insertComicsInDB(comicsList);
+                        }
+                        shouldRecruit.setValue(false);
                     }
 
                     @Override
@@ -83,7 +123,71 @@ public class SuperHeroDetailsViewModel extends ViewModel {
                 }));
     }
 
-    void fetchSuperHero() {
+    private void deleteSuperHeroById(long heroId) {
+        mDisposable.add(mDataSource.deleteSuperhero(heroId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "Hero deleted from DB");
+                        shouldRecruit.setValue(true);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "Error deleting hero from DB");
+                    }
+                }));
+    }
+
+    private void insertComicsInDB(List<Comic> comics) {
+        mDisposable.add(mDataSource.insertComics(comics)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "Comics inserted in DB");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "Error inserting comics in DB");
+                    }
+                }));
+    }
+
+    private void deleteComicsByHeroId(long heroId) {
+        mDisposable.add(mDataSource.deleteComicsByHeroId(heroId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "Comics of Superhero deleted from DB");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "Error deleting comics of Superhero from DB");
+                    }
+                }));
+    }
+
+    private List<Comic> getSuperheroComics() {
+        if (comics != null && comics.getValue() != null) {
+            List<Comic> comicsList = comics.getValue();
+            // TODO: 12/9/2020 na to kanw me stream!!!
+            //comicsList.stream().map()
+            for (Comic item : comicsList) {
+                item.setSuperheroId(mId);
+            }
+        }
+        return null;
+    }
+
+    private void requestSuperHero() {
         String timestamp = ApiHelper.getTimeStamp();
         String hash = ApiHelper.getHash(timestamp);
         if (hash != null) {
@@ -98,7 +202,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
                                 List<Character> list = characterResponse.getData().getResults();
                                 if (list != null && list.size() > 0) {
                                     superHero.setValue(list.get(0));
-                                    fetchComics();
+                                    requestComics();
                                 }
                             }
                         }
@@ -112,7 +216,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
         }
     }
 
-    void fetchComics() {
+    private void requestComics() {
         String timestamp = ApiHelper.getTimeStamp();
         String hash = ApiHelper.getHash(timestamp);
         if (hash != null) {
@@ -140,20 +244,24 @@ public class SuperHeroDetailsViewModel extends ViewModel {
         }
     }
 
-    public LiveData<Character> getSuperHero() {
+    LiveData<Character> getSuperHero() {
         return superHero;
     }
 
-    public MutableLiveData<Boolean> getIsLoading() {
+    MutableLiveData<Boolean> getIsLoading() {
         return isLoading;
     }
 
-    public MutableLiveData<List<Comic>> getComics() {
+    MutableLiveData<List<Comic>> getComics() {
         return comics;
     }
 
-    public MutableLiveData<Integer> getTotalComicsAppeared() {
+    MutableLiveData<Integer> getTotalComicsAppeared() {
         return totalComicsAppeared;
+    }
+
+    MutableLiveData<Boolean> getShouldRecruit() {
+        return shouldRecruit;
     }
 
     @Override

@@ -18,7 +18,7 @@ public class Comic {
     private String thumbnailUrl;
 
     @ColumnInfo(name = "superheroId")
-    private String superheroId;
+    private int superheroId;
 
     @Ignore
     private Thumbnail thumbnail;
@@ -39,7 +39,7 @@ public class Comic {
         return thumbnailUrl;
     }
 
-    public String getSuperheroId() {
+    public int getSuperheroId() {
         return superheroId;
     }
 
@@ -55,7 +55,7 @@ public class Comic {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public void setSuperheroId(String superheroId) {
+    public void setSuperheroId(int superheroId) {
         this.superheroId = superheroId;
     }
 
