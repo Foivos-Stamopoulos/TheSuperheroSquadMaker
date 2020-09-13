@@ -34,6 +34,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     private MutableLiveData<Integer> totalComicsAppeared = new MutableLiveData<>();
     private MutableLiveData<Boolean> shouldRecruit = new MutableLiveData<>();
+    private MutableLiveData<Boolean> shouldShowConfirmationDialog = new MutableLiveData<>();
     private final DataSource mDataSource;
 
     public SuperHeroDetailsViewModel(DataSource dataSource, int heroId) {
@@ -93,12 +94,15 @@ public class SuperHeroDetailsViewModel extends ViewModel {
         if (shouldRecruitHero != null) {
             if (shouldRecruitHero) {
                 insertSuperHeroInDB(superHero.getValue());
-                insertComicsInDB(comics.getValue());
             } else {
-                deleteSuperHeroById(mId);
-                deleteComicsByHeroId(mId);
+                shouldShowConfirmationDialog.setValue(true);
             }
         }
+    }
+
+    public void onFirePressed() {
+        deleteSuperHeroById(mId);
+        deleteComicsByHeroId(mId);
     }
 
     private void insertSuperHeroInDB(Character superhero) {
@@ -178,11 +182,10 @@ public class SuperHeroDetailsViewModel extends ViewModel {
     private List<Comic> getSuperheroComics() {
         if (comics != null && comics.getValue() != null) {
             List<Comic> comicsList = comics.getValue();
-            // TODO: 12/9/2020 na to kanw me stream!!!
-            //comicsList.stream().map()
             for (Comic item : comicsList) {
                 item.setSuperheroId(mId);
             }
+            return comicsList;
         }
         return null;
     }
@@ -262,6 +265,10 @@ public class SuperHeroDetailsViewModel extends ViewModel {
 
     MutableLiveData<Boolean> getShouldRecruit() {
         return shouldRecruit;
+    }
+
+    LiveData<Boolean> getShouldShowConfirmationDialog() {
+        return shouldShowConfirmationDialog;
     }
 
     @Override

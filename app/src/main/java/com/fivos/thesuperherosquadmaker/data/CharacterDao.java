@@ -14,7 +14,7 @@ import io.reactivex.Maybe;
 @Dao
 public interface CharacterDao {
 
-    @Query("SELECT * FROM character")
+    @Query("SELECT * FROM character ORDER BY name ASC")
     Flowable<List<Character>> getAll();
 
     @Query("SELECT * FROM character WHERE id = :heroId")

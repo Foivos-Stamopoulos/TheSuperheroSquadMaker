@@ -7,6 +7,10 @@
     <string name="label_last_appeared">Last appeared in</string>
     <string name="my_squad">My Squad</string>
     <string name="no_connection">No connection</string>
+    <string name="fire_confirmation_dialog_title">Fire Superhero?</string>
+    <string name="fire_confirmation_dialog_description">This will remove the Superhero from your squad.</string>
+    <string name="fire_confirmation_dialog_cancel">CANCEL</string>
+    <string name="fire_confirmation_dialog_ok">GOT IT</string>
 
     <plurals name="numberOfComicsAppeared">
         <item quantity="one">and %d other comic</item>

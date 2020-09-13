@@ -12,6 +12,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -22,12 +23,13 @@ import com.fivos.thesuperherosquadmaker.data.Comic;
 import com.fivos.thesuperherosquadmaker.databinding.SuperHeroDetailsFragmentBinding;
 import com.fivos.thesuperherosquadmaker.util.UnitConverter;
 
-public class SuperHeroDetailsFragment extends Fragment {
+public class SuperHeroDetailsFragment extends Fragment implements ConfirmationDialog.OnFireConfirmationDialogListener{
 
     private SuperHeroDetailsViewModel mViewModel;
     private int mId;
     private SuperHeroDetailsFragmentBinding mBinding;
     private int mRedColor;
+    private int mPrimaryColor;
 
     public SuperHeroDetailsFragment() {
         // Empty Constructor
@@ -56,6 +58,7 @@ public class SuperHeroDetailsFragment extends Fragment {
                 new SuperHeroDetailsViewModelFactory(Injection.provideDataSource(getActivity()), mId))
                 .get(SuperHeroDetailsViewModel.class);
         mRedColor = ContextCompat.getColor(getActivity(), R.color.colorAccent);
+        mPrimaryColor = ContextCompat.getColor(getActivity(), R.color.colorPrimary);
         mBinding.button.setOnClickListener(v -> mViewModel.onButtonPressed());
         setupToolbar();
         subscribeToViewModel();
@@ -110,6 +113,19 @@ public class SuperHeroDetailsFragment extends Fragment {
             }
         });
 
+        mViewModel.getShouldShowConfirmationDialog().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean shouldShowConfirmationDialog) {
+                if (shouldShowConfirmationDialog != null) {
+                    if (shouldShowConfirmationDialog) {
+                        showConfirmationDialog();
+                    } else {
+                        hideConfirmationDialog();
+                    }
+                }
+            }
+        });
+
     }
 
     private void setupSuperHeroDetails(Character superHero) {
@@ -128,6 +144,7 @@ public class SuperHeroDetailsFragment extends Fragment {
             mBinding.button.invalidate();
         } else {
             mBinding.button.setStrokeWidth((int) UnitConverter.convertDpToPixel(1, getActivity()));
+            mBinding.button.setBackgroundTintList(ColorStateList.valueOf(mPrimaryColor));
             mBinding.button.setStrokeColor(ColorStateList.valueOf(mRedColor));
             mBinding.button.setText(R.string.button_fire);
             mBinding.button.invalidate();
@@ -151,6 +168,24 @@ public class SuperHeroDetailsFragment extends Fragment {
         if (dialog != null) {
             dialog.dismiss();
         }
+    }
+
+    private void showConfirmationDialog() {
+        ConfirmationDialog dialog = new ConfirmationDialog();
+        dialog.setTargetFragment(this, 300);
+        dialog.show(getParentFragmentManager(), "confirmation_dialog");
+    }
+
+    private void hideConfirmationDialog() {
+        DialogFragment dialog = (DialogFragment) getParentFragmentManager().findFragmentByTag("confirmation_dialog");
+        if (dialog != null) {
+            dialog.dismiss();
+        }
+    }
+
+    @Override
+    public void onFirePressed() {
+        mViewModel.onFirePressed();
     }
 
     @Override

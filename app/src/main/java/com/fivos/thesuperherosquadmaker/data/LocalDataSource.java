@@ -61,7 +61,9 @@ public class LocalDataSource implements DataSource {
     private void setComicsThumbnailUrl(List<Comic> comics) {
         if (comics != null) {
             for (Comic item : comics) {
-                if (item.getThumbnail() != null) {
+                if (item.getThumbnailUrl() != null) {
+                    item.setThumbnailUrl(item.getThumbnailUrl());
+                } else if (item.getThumbnail() != null) {
                     item.setThumbnailUrl(item.getThumbnail().getUrl());
                 }
             }
@@ -69,8 +71,12 @@ public class LocalDataSource implements DataSource {
     }
 
     private String getThumbnailUrl(Character superhero) {
-        if (superhero != null && superhero.getThumbnail() != null) {
-            return superhero.getThumbnail().getUrl();
+        if (superhero != null) {
+            if (superhero.getThumbnailUrl() != null) {
+                return superhero.getThumbnailUrl();
+            } else if (superhero.getThumbnail() != null) {
+                return superhero.getThumbnail().getUrl();
+            }
         }
         return null;
     }
