@@ -2,8 +2,12 @@ package com.fivos.thesuperherosquadmaker.ui.superHeroes;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PageKeyedDataSource;
+import androidx.paging.PagedList;
 
 import com.fivos.thesuperherosquadmaker.DataSource;
 import com.fivos.thesuperherosquadmaker.data.Character;
@@ -23,9 +27,24 @@ public class SuperHeroesViewModel extends ViewModel {
     private static final String TAG = SuperHeroesViewModel.class.getSimpleName();
     private MutableLiveData<List<Character>> mSuperHeroes = new MutableLiveData<>();
 
+    LiveData<PagedList<Character>> itemPagedList;
+    LiveData<PageKeyedDataSource<Integer, Character>> liveDataSource;
+
     public SuperHeroesViewModel(DataSource dataSource) {
         mDataSource = dataSource;
         mDisposable = new CompositeDisposable();
+
+        SuperheroDataSourceFactory dataSourceFactory = new SuperheroDataSourceFactory();
+        liveDataSource = dataSourceFactory.getItemLiveDataSource();
+
+        //Getting PagedList config
+        PagedList.Config pagedListConfig =
+                (new PagedList.Config.Builder())
+                        .setEnablePlaceholders(false)
+                        .setPageSize(SuperheroDataSource.PAGE_SIZE).build();
+
+        //Building the paged list
+        itemPagedList = (new LivePagedListBuilder(dataSourceFactory, pagedListConfig)).build();
     }
 
     void start() {

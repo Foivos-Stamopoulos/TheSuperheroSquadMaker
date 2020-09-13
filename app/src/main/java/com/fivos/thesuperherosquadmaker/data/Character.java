@@ -5,6 +5,8 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import java.util.Objects;
+
 @Entity
 public class Character {
 
@@ -61,5 +63,22 @@ public class Character {
 
     public void setThumbnail(Thumbnail thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Character character = (Character) o;
+        return id == character.id &&
+                Objects.equals(name, character.name) &&
+                Objects.equals(description, character.description) &&
+                Objects.equals(thumbnailUrl, character.thumbnailUrl) &&
+                Objects.equals(thumbnail, character.thumbnail);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description, thumbnailUrl, thumbnail);
     }
 }

@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel;
 import com.fivos.thesuperherosquadmaker.DataSource;
 import com.fivos.thesuperherosquadmaker.api.ApiHelper;
 import com.fivos.thesuperherosquadmaker.api.NetworkClient;
-import com.fivos.thesuperherosquadmaker.api.SuperHeroesAPI;
+import com.fivos.thesuperherosquadmaker.api.MarvelAPI;
 import com.fivos.thesuperherosquadmaker.data.Character;
 import com.fivos.thesuperherosquadmaker.data.CharacterResponse;
 import com.fivos.thesuperherosquadmaker.data.Comic;
@@ -191,7 +191,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
         String timestamp = ApiHelper.getTimeStamp();
         String hash = ApiHelper.getHash(timestamp);
         if (hash != null) {
-            mDisposable.add(NetworkClient.getRetrofit().create(SuperHeroesAPI.class)
+            mDisposable.add(NetworkClient.getRetrofit().create(MarvelAPI.class)
                     .getCharacter(mId, timestamp, Config.API_PUBLIC_KEY, hash)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -220,7 +220,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
         String timestamp = ApiHelper.getTimeStamp();
         String hash = ApiHelper.getHash(timestamp);
         if (hash != null) {
-            mDisposable.add(NetworkClient.getRetrofit().create(SuperHeroesAPI.class)
+            mDisposable.add(NetworkClient.getRetrofit().create(MarvelAPI.class)
                     .getComics(mId, timestamp, Config.API_PUBLIC_KEY, hash)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())

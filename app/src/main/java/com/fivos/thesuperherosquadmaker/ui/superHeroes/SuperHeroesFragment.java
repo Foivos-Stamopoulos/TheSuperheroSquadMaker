@@ -11,29 +11,24 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.fivos.thesuperherosquadmaker.Injection;
-import com.fivos.thesuperherosquadmaker.MainActivityViewModel;
 import com.fivos.thesuperherosquadmaker.R;
 import com.fivos.thesuperherosquadmaker.data.Character;
-import com.fivos.thesuperherosquadmaker.data.CharacterResponse;
 import com.fivos.thesuperherosquadmaker.databinding.SuperHeroesFragmentBinding;
 import com.fivos.thesuperherosquadmaker.util.MyNetworkUtils;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
-import io.reactivex.observers.DisposableSingleObserver;
-
-public class SuperHeroesFragment extends Fragment implements SuperHeroAdapter.OnItemClickListener{
+public class SuperHeroesFragment extends Fragment implements  SquadAdapter.OnHorizontalListItemClickListener,
+        SuperheroPagedAdapter.OnVerticalListItemClickListener{
 
     private SuperHeroesViewModel mViewModel;
     private SuperHeroesFragmentBinding mBinding;
-    private SuperHeroAdapter mAdapter;
-    private DisposableSingleObserver<CharacterResponse> mDisposable;
-    private static final String TAG = SuperHeroesFragment.class.getSimpleName();
-    private MainActivityViewModel mSharedViewModel;
+    private SuperheroPagedAdapter mPagedAdapter;
     private SquadAdapter mSquadAdapter;
 
     public SuperHeroesFragment() {
@@ -51,48 +46,51 @@ public class SuperHeroesFragment extends Fragment implements SuperHeroAdapter.On
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         mViewModel = new ViewModelProvider(this,
-                new SuperHeroesViewModelFactory(Injection.provideDataSource(getActivity()))).get(SuperHeroesViewModel.class);
+                new SuperHeroesViewModelFactory(
+                        Injection.provideDataSource(getActivity()))).get(SuperHeroesViewModel.class);
         subscribeToViewModel();
-        mSharedViewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
-        subscribeToSharedViewModel();
+        setupVerticalRecyclerView();
         mViewModel.start();
     }
 
-    private void subscribeToSharedViewModel() {
-        mSharedViewModel.getSuperHeroes().observe(getViewLifecycleOwner(), superHeroes -> {
-            if (superHeroes != null) {
-                onSuperHeroesLoaded(superHeroes);
-            }
-        });
-    }
-
     private void subscribeToViewModel() {
-        mViewModel.getSuperHeroes().observe(getViewLifecycleOwner(), new Observer<List<Character>>() {
-            @Override
-            public void onChanged(List<Character> superheroes) {
-                if (superheroes.size() > 0) {
-                    mBinding.mySquadTV.setVisibility(View.VISIBLE);
-                    onSquadLoaded(superheroes);
-                } else {
-                    mBinding.mySquadTV.setVisibility(View.GONE);
-                }
+        mViewModel.getSuperHeroes().observe(getViewLifecycleOwner(), superheroes -> {
+            if (superheroes.size() > 0) {
+                mBinding.mySquadTV.setVisibility(View.VISIBLE);
+                onSquadLoaded(superheroes);
+            } else {
+                mBinding.mySquadTV.setVisibility(View.GONE);
             }
         });
     }
 
-    private void onSuperHeroesLoaded(List<Character> superHeroes) {
-        mAdapter = new SuperHeroAdapter(superHeroes);
-        mAdapter.setOnItemClickListener(this);
-        // Attach the adapter to the recyclerview to populate items
-        mBinding.heroesRV.setAdapter(mAdapter);
-        // Set layout manager to position the items
+    private void setupVerticalRecyclerView() {
         mBinding.heroesRV.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mBinding.heroesRV.setHasFixedSize(true);
+
+        mPagedAdapter = new SuperheroPagedAdapter();
+        mPagedAdapter.setOnVerticalListItemClickListener(this);
+        // Observing the PagedList from view model
+        mViewModel.itemPagedList.observe(getViewLifecycleOwner(), new Observer<PagedList<Character>>() {
+            @Override
+            public void onChanged(@Nullable PagedList<Character> items) {
+                // In case of any changes
+                // submit the items to adapter
+                mPagedAdapter.submitList(items);
+            }
+        });
+        mBinding.heroesRV.setAdapter(mPagedAdapter);
     }
 
+    /**
+     * Displays the horizontal Superhero list
+     * @param superHeroes the Superheroes that belong to the Squad
+     */
     private void onSquadLoaded(List<Character> superHeroes) {
         mSquadAdapter = new SquadAdapter(superHeroes);
-        //mSquadAdapter.setOnItemClickListener(this);
+        mSquadAdapter.setOnHorizontalListItemClickListener(this);
         // Attach the adapter to the recyclerview to populate items
         mBinding.squadRV.setAdapter(mSquadAdapter);
         // Set layout manager to position the items
@@ -100,13 +98,22 @@ public class SuperHeroesFragment extends Fragment implements SuperHeroAdapter.On
     }
 
     @Override
-    public void onItemClick(View itemView, int position) {
+    public void onHorizontalListItemClick(View itemView, int position) {
+        onSuperheroPressed(itemView, mSquadAdapter.getCharacterId(position));
+    }
+
+    @Override
+    public void onVerticalListItemClick(View itemView, int position) {
+        onSuperheroPressed(itemView, mPagedAdapter.getCharacterId(position));
+    }
+
+    private void onSuperheroPressed(View itemView, int heroId) {
         if (MyNetworkUtils.isConnected(getActivity())) {
             Bundle args = new Bundle();
-            args.putInt("hero_id", mAdapter.getCharacterId(position));
+            args.putInt("hero_id", heroId);
             Navigation.findNavController(itemView).navigate(R.id.action_superHeroesFragment_to_superHeroDetailsFragment, args);
         } else {
-            Snackbar.make(mBinding.getRoot(), getString(R.string.no_connection),Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(mBinding.getRoot(), getString(R.string.no_connection), Snackbar.LENGTH_SHORT).show();
         }
     }
 

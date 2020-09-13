@@ -21,7 +21,7 @@ public class SquadAdapter extends RecyclerView.Adapter<SquadAdapter.ViewHolder>{
 
     // Store a member variable for the Super Heroes
     private List<Character> mCharacters;
-    private OnItemClickListener mListener;
+    private OnHorizontalListItemClickListener mListener;
 
     // Pass in the Super Heroes list into the constructor
     public SquadAdapter(List<Character> characters) {
@@ -29,12 +29,12 @@ public class SquadAdapter extends RecyclerView.Adapter<SquadAdapter.ViewHolder>{
     }
 
     // Define the listener interface
-    public interface OnItemClickListener {
-        void onItemClick(View itemView, int position);
+    public interface OnHorizontalListItemClickListener {
+        void onHorizontalListItemClick(View itemView, int position);
     }
 
     // Define the method that allows the parent activity or fragment to define the listener
-    public void setOnItemClickListener(OnItemClickListener listener) {
+    public void setOnHorizontalListItemClickListener(OnHorizontalListItemClickListener listener) {
         this.mListener = listener;
     }
 
@@ -80,15 +80,12 @@ public class SquadAdapter extends RecyclerView.Adapter<SquadAdapter.ViewHolder>{
             avatarIV = itemView.avatarIV;
             nameTV = itemView.nameTV;
             // Setup the click listener
-            itemView.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Triggers click upwards to the adapter on click
-                    if (mListener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            mListener.onItemClick(itemView.getRoot(), position);
-                        }
+            itemView.getRoot().setOnClickListener(v -> {
+                // Triggers click upwards to the adapter on click
+                if (mListener != null) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        mListener.onHorizontalListItemClick(itemView.getRoot(), position);
                     }
                 }
             });

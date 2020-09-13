@@ -8,7 +8,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-public interface SuperHeroesAPI {
+public interface MarvelAPI {
 
     @GET("/v1/public/characters")
     Single<CharacterResponse> getCharacters(
@@ -31,6 +31,15 @@ public interface SuperHeroesAPI {
             @Query("ts") String timestamp,
             @Query("apikey") String publicKey,
             @Query("hash") String hash
+    );
+
+    @GET("/v1/public/characters")
+    Single<CharacterResponse> getCharactersPaged(
+            @Query("ts") String timestamp,
+            @Query("apikey") String publicKey,
+            @Query("hash") String hash,
+            @Query("limit") int pageSize,
+            @Query("offset") int skip
     );
 
 }

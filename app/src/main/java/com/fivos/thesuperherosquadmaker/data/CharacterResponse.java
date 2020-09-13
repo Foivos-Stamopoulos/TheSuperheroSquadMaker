@@ -7,11 +7,6 @@ public class CharacterResponse {
     private int code;
     private Data data;
 
-    public CharacterResponse(int code, Data data) {
-        this.code = code;
-        this.data = data;
-    }
-
     public int getCode() {
         return code;
     }
@@ -22,7 +17,10 @@ public class CharacterResponse {
 
     public class Data {
 
+        private int offset;
+        private int limit;
         private int count;
+        private int total;
         private List<Character> results;
 
         public Data(int count, List<Character> results) {
@@ -36,6 +34,18 @@ public class CharacterResponse {
 
         public List<Character> getResults() {
             return results;
+        }
+
+        public int getOffset() {
+            return offset;
+        }
+
+        public int getLimit() {
+            return limit;
+        }
+
+        public int getTotal() {
+            return total;
         }
     }
 
