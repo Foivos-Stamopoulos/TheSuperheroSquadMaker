@@ -1,5 +1,7 @@
 package com.fivos.thesuperherosquadmaker.ui.superHeroes;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.paging.PageKeyedDataSource;
 
@@ -16,8 +18,9 @@ import io.reactivex.schedulers.Schedulers;
 
 public class SuperheroDataSource extends PageKeyedDataSource<Integer, Character> {
 
+    private static final String TAG = SuperheroDataSource.class.getSimpleName();
     // The size of a page that we want
-    public static final int PAGE_SIZE = 20;
+    public static final int PAGE_SIZE = 80;
 
     // We will start by skipping o superheroes
     private static final int SKIP = 0;
@@ -41,7 +44,7 @@ public class SuperheroDataSource extends PageKeyedDataSource<Integer, Character>
 
                     @Override
                     public void onError(Throwable e) {
-
+                        Log.d(TAG, "loadInitial error: " + e.toString());
                     }
                 });
     }
@@ -71,7 +74,7 @@ public class SuperheroDataSource extends PageKeyedDataSource<Integer, Character>
 
                     @Override
                     public void onError(Throwable e) {
-
+                        Log.d(TAG, "loadBefore error: " + e.toString());
                     }
                 });
     }
@@ -103,7 +106,7 @@ public class SuperheroDataSource extends PageKeyedDataSource<Integer, Character>
 
                     @Override
                     public void onError(Throwable e) {
-
+                        Log.d(TAG, "loadAfter error: " + e.toString());
                     }
                 });
     }

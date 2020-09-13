@@ -86,7 +86,7 @@ public class SuperHeroDetailsFragment extends Fragment implements ConfirmationDi
                     Glide.with(getActivity()).load(url).into(mBinding.comic1IV);
                     mBinding.comic1TV.setText(comic1.getTitle());
                 }
-                if (comicsList.size() >= 1) {
+                if (comicsList.size() > 1) {
                     Comic comic2 = comicsList.get(1);
                     String url = comic2.getThumbnail() != null ? comic2.getThumbnail().getUrl() : comic2.getThumbnailUrl();
                     Glide.with(getActivity()).load(url).into(mBinding.comic2IV);
