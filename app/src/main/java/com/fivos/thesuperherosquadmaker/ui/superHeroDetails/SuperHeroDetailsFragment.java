@@ -56,7 +56,7 @@ public class SuperHeroDetailsFragment extends Fragment implements ConfirmationDi
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = new ViewModelProvider(this,
-                new SuperHeroDetailsViewModelFactory(Injection.provideDataSource(getActivity()), mId))
+                new SuperHeroDetailsViewModelFactory(Injection.provideRepository(getActivity()), mId))
                 .get(SuperHeroDetailsViewModel.class);
         mRedColor = ContextCompat.getColor(getActivity(), R.color.colorAccent);
         mPrimaryColor = ContextCompat.getColor(getActivity(), R.color.colorPrimary);

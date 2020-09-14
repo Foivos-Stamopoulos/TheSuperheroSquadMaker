@@ -9,8 +9,6 @@ import androidx.lifecycle.ViewModel;
 import com.fivos.thesuperherosquadmaker.DataSource;
 import com.fivos.thesuperherosquadmaker.R;
 import com.fivos.thesuperherosquadmaker.api.ApiHelper;
-import com.fivos.thesuperherosquadmaker.api.MarvelAPI;
-import com.fivos.thesuperherosquadmaker.api.NetworkClient;
 import com.fivos.thesuperherosquadmaker.data.Character;
 import com.fivos.thesuperherosquadmaker.data.CharacterResponse;
 import com.fivos.thesuperherosquadmaker.data.Comic;
@@ -39,10 +37,10 @@ public class SuperHeroDetailsViewModel extends ViewModel {
     private MutableLiveData<Boolean> shouldRecruit = new MutableLiveData<>();
     private MutableLiveData<Boolean> shouldShowConfirmationDialog = new MutableLiveData<>();
     private final MutableLiveData<Event<Integer>> mSnackbarText = new MutableLiveData<>();
-    private final DataSource mDataSource;
+    private final DataSource mRepository;
 
-    public SuperHeroDetailsViewModel(DataSource dataSource, int heroId) {
-        mDataSource = dataSource;
+    public SuperHeroDetailsViewModel(DataSource repository, int heroId) {
+        mRepository = repository;
         mId = heroId;
         mDisposable = new CompositeDisposable();
     }
@@ -53,7 +51,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
     }
 
     private void fetchSuperHeroFromDB(long heroId) {
-        mDisposable.add(mDataSource.getSuperhero(heroId)
+        mDisposable.add(mRepository.getSuperhero(heroId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(character -> {
@@ -74,7 +72,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
     }
 
     private void fetchComicsFromDB(long heroId) {
-        mDisposable.add(mDataSource.getComicsByHeroId(heroId)
+        mDisposable.add(mRepository.getComicsByHeroId(heroId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(comicsList -> {
@@ -110,7 +108,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
     }
 
     private void insertSuperHeroInDB(Character superhero) {
-        mDisposable.add(mDataSource.insertSuperhero(superhero)
+        mDisposable.add(mRepository.insertSuperhero(superhero)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableCompletableObserver() {
@@ -132,7 +130,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
     }
 
     private void deleteSuperHeroById(long heroId) {
-        mDisposable.add(mDataSource.deleteSuperhero(heroId)
+        mDisposable.add(mRepository.deleteSuperhero(heroId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableCompletableObserver() {
@@ -150,7 +148,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
     }
 
     private void insertComicsInDB(List<Comic> comics) {
-        mDisposable.add(mDataSource.insertComics(comics)
+        mDisposable.add(mRepository.insertComics(comics)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableCompletableObserver() {
@@ -167,7 +165,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
     }
 
     private void deleteComicsByHeroId(long heroId) {
-        mDisposable.add(mDataSource.deleteComicsByHeroId(heroId)
+        mDisposable.add(mRepository.deleteComicsByHeroId(heroId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableCompletableObserver() {
@@ -198,8 +196,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
         String timestamp = ApiHelper.getTimeStamp();
         String hash = ApiHelper.getHash(timestamp);
         if (hash != null) {
-            mDisposable.add(NetworkClient.getRetrofit().create(MarvelAPI.class)
-                    .getCharacter(mId, timestamp, Config.API_PUBLIC_KEY, hash)
+            mDisposable.add(mRepository.getCharacterFromBackend(mId, timestamp, Config.API_PUBLIC_KEY, hash)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(new DisposableSingleObserver<CharacterResponse>() {
@@ -232,8 +229,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
         String timestamp = ApiHelper.getTimeStamp();
         String hash = ApiHelper.getHash(timestamp);
         if (hash != null) {
-            mDisposable.add(NetworkClient.getRetrofit().create(MarvelAPI.class)
-                    .getComics(mId, timestamp, Config.API_PUBLIC_KEY, hash)
+            mDisposable.add(mRepository.getComicsFromBackend(mId, timestamp, Config.API_PUBLIC_KEY, hash)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(new DisposableSingleObserver<ComicsResponse>() {

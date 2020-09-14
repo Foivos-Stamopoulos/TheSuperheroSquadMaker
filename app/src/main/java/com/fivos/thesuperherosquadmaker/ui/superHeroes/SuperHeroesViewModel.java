@@ -22,7 +22,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class SuperHeroesViewModel extends ViewModel {
 
-    private final DataSource mDataSource;
+    private final DataSource mRepository;
     private CompositeDisposable mDisposable;
     private static final String TAG = SuperHeroesViewModel.class.getSimpleName();
     private MutableLiveData<List<Character>> mSuperHeroes = new MutableLiveData<>();
@@ -30,8 +30,8 @@ public class SuperHeroesViewModel extends ViewModel {
     LiveData<PagedList<Character>> itemPagedList;
     LiveData<PageKeyedDataSource<Integer, Character>> liveDataSource;
 
-    public SuperHeroesViewModel(DataSource dataSource) {
-        mDataSource = dataSource;
+    public SuperHeroesViewModel(DataSource repository) {
+        mRepository = repository;
         mDisposable = new CompositeDisposable();
 
         SuperheroDataSourceFactory dataSourceFactory = new SuperheroDataSourceFactory();
@@ -52,7 +52,7 @@ public class SuperHeroesViewModel extends ViewModel {
     }
 
     private void fetchSuperHeroesFromDB() {
-        mDisposable.add(mDataSource.getAllSuperheroes()
+        mDisposable.add(mRepository.getAllSuperheroes()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<Character>>() {

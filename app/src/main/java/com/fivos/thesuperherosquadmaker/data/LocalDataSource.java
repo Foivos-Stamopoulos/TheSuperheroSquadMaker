@@ -7,6 +7,7 @@ import java.util.List;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 /**
  * Using the Room database as a data source.
@@ -81,4 +82,27 @@ public class LocalDataSource implements DataSource {
         return null;
     }
 
+    @Override
+    public Single<CharacterResponse> getCharactersFromBackend(String timestamp, String publicKey, String hash) {
+        // Implemented by the remote data source
+        return null;
+    }
+
+    @Override
+    public Single<CharacterResponse> getCharacterFromBackend(int id, String timestamp, String publicKey, String hash) {
+        // Implemented by the remote data source
+        return null;
+    }
+
+    @Override
+    public Single<ComicsResponse> getComicsFromBackend(int characterId, String timestamp, String publicKey, String hash) {
+        // Implemented by the remote data source
+        return null;
+    }
+
+    @Override
+    public Single<CharacterResponse> getCharactersPagedFromBackend(String timestamp, String publicKey, String hash, int pageSize, int skip) {
+        // Implemented by the remote data source
+        return null;
+    }
 }

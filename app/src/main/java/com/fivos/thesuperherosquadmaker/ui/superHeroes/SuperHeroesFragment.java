@@ -49,7 +49,7 @@ public class SuperHeroesFragment extends Fragment implements  SquadAdapter.OnHor
 
         mViewModel = new ViewModelProvider(this,
                 new SuperHeroesViewModelFactory(
-                        Injection.provideDataSource(getActivity()))).get(SuperHeroesViewModel.class);
+                        Injection.provideRepository(getActivity()))).get(SuperHeroesViewModel.class);
         subscribeToViewModel();
         setupVerticalRecyclerView();
         mViewModel.start();
