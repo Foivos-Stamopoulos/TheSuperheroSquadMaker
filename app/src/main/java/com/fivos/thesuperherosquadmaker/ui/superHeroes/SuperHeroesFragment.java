@@ -51,8 +51,22 @@ public class SuperHeroesFragment extends Fragment implements  SquadAdapter.OnHor
                 new SuperHeroesViewModelFactory(
                         Injection.provideRepository(getActivity()))).get(SuperHeroesViewModel.class);
         subscribeToViewModel();
-        setupVerticalRecyclerView();
+        if (MyNetworkUtils.isConnected(getActivity())) {
+            setupVerticalRecyclerView();
+        } else {
+            mBinding.noConnectionLL.setVisibility(View.VISIBLE);
+        }
+        mBinding.retryButton.setOnClickListener(v -> onRetryPressed());
         mViewModel.start();
+    }
+
+    private void onRetryPressed() {
+        if (MyNetworkUtils.isConnected(getActivity())) {
+            mBinding.noConnectionLL.setVisibility(View.GONE);
+            setupVerticalRecyclerView();
+        } else {
+            Snackbar.make(mBinding.getRoot(), getString(R.string.no_connection), Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     private void subscribeToViewModel() {
