@@ -22,6 +22,7 @@ import com.fivos.thesuperherosquadmaker.data.Character;
 import com.fivos.thesuperherosquadmaker.data.Comic;
 import com.fivos.thesuperherosquadmaker.databinding.SuperHeroDetailsFragmentBinding;
 import com.fivos.thesuperherosquadmaker.util.UnitConverter;
+import com.google.android.material.snackbar.Snackbar;
 
 public class SuperHeroDetailsFragment extends Fragment implements ConfirmationDialog.OnFireConfirmationDialogListener{
 
@@ -123,6 +124,13 @@ public class SuperHeroDetailsFragment extends Fragment implements ConfirmationDi
                         hideConfirmationDialog();
                     }
                 }
+            }
+        });
+
+        mViewModel.getSnackbarText().observe(getViewLifecycleOwner(), event -> {
+            Integer msg = event.getContentIfNotHandled();
+            if (msg != null) {
+                Snackbar.make(mBinding.getRoot(), getString(msg), Snackbar.LENGTH_SHORT).show();
             }
         });
 

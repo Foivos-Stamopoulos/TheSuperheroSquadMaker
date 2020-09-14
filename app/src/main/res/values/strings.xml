@@ -11,6 +11,8 @@
     <string name="fire_confirmation_dialog_description">This will remove the Superhero from your squad.</string>
     <string name="fire_confirmation_dialog_cancel">CANCEL</string>
     <string name="fire_confirmation_dialog_ok">GOT IT</string>
+    <string name="character_not_found">Character not found</string>
+    <string name="something_went_wrong">Something went wrong</string>
 
     <plurals name="numberOfComicsAppeared">
         <item quantity="one">and %d other comic</item>

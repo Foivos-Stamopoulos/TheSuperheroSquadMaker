@@ -7,14 +7,17 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.fivos.thesuperherosquadmaker.DataSource;
+import com.fivos.thesuperherosquadmaker.R;
 import com.fivos.thesuperherosquadmaker.api.ApiHelper;
-import com.fivos.thesuperherosquadmaker.api.NetworkClient;
 import com.fivos.thesuperherosquadmaker.api.MarvelAPI;
+import com.fivos.thesuperherosquadmaker.api.NetworkClient;
 import com.fivos.thesuperherosquadmaker.data.Character;
 import com.fivos.thesuperherosquadmaker.data.CharacterResponse;
 import com.fivos.thesuperherosquadmaker.data.Comic;
 import com.fivos.thesuperherosquadmaker.data.ComicsResponse;
 import com.fivos.thesuperherosquadmaker.util.Config;
+import com.fivos.thesuperherosquadmaker.util.Event;
+import com.fivos.thesuperherosquadmaker.util.ParseResponse;
 
 import java.util.List;
 
@@ -35,6 +38,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
     private MutableLiveData<Integer> totalComicsAppeared = new MutableLiveData<>();
     private MutableLiveData<Boolean> shouldRecruit = new MutableLiveData<>();
     private MutableLiveData<Boolean> shouldShowConfirmationDialog = new MutableLiveData<>();
+    private final MutableLiveData<Event<Integer>> mSnackbarText = new MutableLiveData<>();
     private final DataSource mDataSource;
 
     public SuperHeroDetailsViewModel(DataSource dataSource, int heroId) {
@@ -214,6 +218,11 @@ public class SuperHeroDetailsViewModel extends ViewModel {
                         public void onError(Throwable e) {
                             Log.d(TAG, "error: " + e.getMessage());
                             isLoading.setValue(false);
+                            if (ParseResponse.getStatusCode(e) == 404) {
+                                mSnackbarText.setValue(new Event<>(R.string.character_not_found));
+                            } else {
+                                mSnackbarText.setValue(new Event<>(R.string.something_went_wrong));
+                            }
                         }
                     }));
         }
@@ -242,6 +251,7 @@ public class SuperHeroDetailsViewModel extends ViewModel {
                         public void onError(Throwable e) {
                             Log.d(TAG, "error: " + e.getMessage());
                             isLoading.setValue(false);
+                            mSnackbarText.setValue(new Event<>(R.string.something_went_wrong));
                         }
                     }));
         }
@@ -269,6 +279,10 @@ public class SuperHeroDetailsViewModel extends ViewModel {
 
     LiveData<Boolean> getShouldShowConfirmationDialog() {
         return shouldShowConfirmationDialog;
+    }
+
+    LiveData<Event<Integer>> getSnackbarText() {
+        return mSnackbarText;
     }
 
     @Override
