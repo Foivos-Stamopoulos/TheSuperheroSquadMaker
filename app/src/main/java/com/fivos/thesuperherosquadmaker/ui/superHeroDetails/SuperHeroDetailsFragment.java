@@ -97,17 +97,6 @@ public class SuperHeroDetailsFragment extends Fragment implements ConfirmationDi
 
         });
 
-        mViewModel.getTotalComicsAppeared().observe(getViewLifecycleOwner(), totalComicsAppeared -> {
-            if (totalComicsAppeared != null && totalComicsAppeared > 2) {
-                mBinding.otherComicsTV.setVisibility(View.VISIBLE);
-                String text = getResources().getQuantityString(R.plurals.numberOfComicsAppeared,
-                        totalComicsAppeared - 2, totalComicsAppeared - 2);
-                mBinding.otherComicsTV.setText(text);
-            } else {
-                mBinding.otherComicsTV.setVisibility(View.INVISIBLE);
-            }
-        });
-
         mViewModel.getShouldRecruit().observe(getViewLifecycleOwner(), shouldRecruit -> {
             if (shouldRecruit != null) {
                 styleButton(shouldRecruit);
@@ -142,6 +131,15 @@ public class SuperHeroDetailsFragment extends Fragment implements ConfirmationDi
             Glide.with(getActivity()).load(url).into(mBinding.avatarIV);
             mBinding.nameTV.setText(superHero.getName());
             mBinding.biographyTV.setText(superHero.getDescription());
+            int totalComicsAppeared = superHero.getAvailable();
+            if (totalComicsAppeared > 2) {
+                mBinding.otherComicsTV.setVisibility(View.VISIBLE);
+                String text = getResources().getQuantityString(R.plurals.numberOfComicsAppeared,
+                        totalComicsAppeared - 2, totalComicsAppeared - 2);
+                mBinding.otherComicsTV.setText(text);
+            } else {
+                mBinding.otherComicsTV.setVisibility(View.INVISIBLE);
+            }
         }
     }
 

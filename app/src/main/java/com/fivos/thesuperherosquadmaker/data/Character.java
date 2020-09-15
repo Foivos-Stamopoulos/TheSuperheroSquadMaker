@@ -22,6 +22,12 @@ public class Character {
     @ColumnInfo(name = "thumbnailUrl")
     private String thumbnailUrl;
 
+    @ColumnInfo(name = "available")
+    private int available;
+
+    @Ignore
+    private Comics comics;
+
     @Ignore
     private Thumbnail thumbnail;
 
@@ -65,6 +71,31 @@ public class Character {
         this.thumbnail = thumbnail;
     }
 
+    public int getAvailable() {
+        return available;
+    }
+
+    public Comics getComics() {
+        return comics;
+    }
+
+    public void setAvailable(int available) {
+        this.available = available;
+    }
+
+    public void setComics(Comics comics) {
+        this.comics = comics;
+    }
+
+    public class Comics {
+
+        private int available;
+
+        public int getAvailable() {
+            return available;
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -82,3 +113,4 @@ public class Character {
         return Objects.hash(id, name, description, thumbnailUrl, thumbnail);
     }
 }
+

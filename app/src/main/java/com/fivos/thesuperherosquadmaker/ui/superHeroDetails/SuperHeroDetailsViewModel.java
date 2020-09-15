@@ -33,7 +33,6 @@ public class SuperHeroDetailsViewModel extends ViewModel {
     private MutableLiveData<Character> superHero = new MutableLiveData<>();
     private MutableLiveData<List<Comic>> comics = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
-    private MutableLiveData<Integer> totalComicsAppeared = new MutableLiveData<>();
     private MutableLiveData<Boolean> shouldRecruit = new MutableLiveData<>();
     private MutableLiveData<Boolean> shouldShowConfirmationDialog = new MutableLiveData<>();
     private final MutableLiveData<Event<Integer>> mSnackbarText = new MutableLiveData<>();
@@ -77,7 +76,6 @@ public class SuperHeroDetailsViewModel extends ViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(comicsList -> {
                             comics.setValue(comicsList);
-                            totalComicsAppeared.setValue(comicsList.size());
                             isLoading.setValue(false);
                         },
                         ex -> {
@@ -205,7 +203,11 @@ public class SuperHeroDetailsViewModel extends ViewModel {
                             if (characterResponse != null && characterResponse.getData() != null) {
                                 List<Character> list = characterResponse.getData().getResults();
                                 if (list != null && list.size() > 0) {
-                                    superHero.setValue(list.get(0));
+                                    Character superhero = list.get(0);
+                                    if (superhero.getComics() != null) {
+                                        superhero.setAvailable(superhero.getComics().getAvailable());
+                                    }
+                                    superHero.setValue(superhero);
                                     requestComics();
                                 }
                             }
@@ -238,7 +240,6 @@ public class SuperHeroDetailsViewModel extends ViewModel {
                             if (characterResponse != null && characterResponse.getData() != null) {
                                 List<Comic> list = characterResponse.getData().getResults();
                                 comics.setValue(list);
-                                totalComicsAppeared.setValue(characterResponse.getData().getTotal());
                             }
                             isLoading.setValue(false);
                         }
@@ -263,10 +264,6 @@ public class SuperHeroDetailsViewModel extends ViewModel {
 
     MutableLiveData<List<Comic>> getComics() {
         return comics;
-    }
-
-    MutableLiveData<Integer> getTotalComicsAppeared() {
-        return totalComicsAppeared;
     }
 
     MutableLiveData<Boolean> getShouldRecruit() {
